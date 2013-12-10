@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Terminal=false
+Type=Application
+Icon=/home/eleven/TmpCode/pymd/icon/M.ico
+Name=MyEditor
+Exec=/home/eleven/TmpCode/pymd/MyEditor.py
+Path=
