@@ -19,11 +19,17 @@ debian 可以使用`apt-get` 来安装
 #设置
 
 **themes**
+
 *textview* 
+
 编辑器 主题文件 
+
 *webkit*
+
 webkit 主题文件
+
 *language-specs*
+
 语法文件
 
 由于默认的`gtksourceview2`没有`markdown`语法支持.
