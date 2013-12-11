@@ -80,7 +80,7 @@ class Webkit():
         self.sw.hide()
 
     def view(self, stylescheme, markdown_file):
-        fp = open('/home/eleven/view.html','w')
+
         html = """
         <!DOCTYPE html>
         <html lang="en">
@@ -96,8 +96,6 @@ class Webkit():
         </body>
         </html>
             """%(stylescheme,markdown.markdown(markdown_file))
-
-        fp.write(html)
 
         self.webview.load_html_string(html,'')
         self.webview.show_all()
