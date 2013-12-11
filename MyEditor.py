@@ -466,6 +466,7 @@ class FileBrowser():
         hbox.pack_start(gtk.Label(),False, 5,5)
         hbox.pack_end(entry)
         dialog.vbox.pack_end(hbox)
+        entry.grab_focus()
         dialog.show_all()
         r = dialog.run()
 
