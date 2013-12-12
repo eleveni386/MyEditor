@@ -23,16 +23,16 @@ CURRENTPATH = os.path.abspath(os.path.split(__file__)[0])
 
 #----------------------------------
 STATE_POOL = {}
-WWBKITTHEME = '%s/themes/webkit/github.css'%CURRENTPATH
+WEBKITTHEME = '%s/themes/webkit/github.css'%CURRENTPATH
 TEXTVIEW_PATH = ['%s/themes/textview/'%CURRENTPATH]
 TEXTVIEW_STYLE = 'cobalt'
-LANGUAGE_PATH = ['%s/language-specs/'%CURRENTPATH]
+LANGUAGE_PATH = ['%s/themes/language-specs'%CURRENTPATH]
 ICON = '%s/icon/M.ico'%CURRENTPATH
 #---------------------------------
 
 if os.getuid() != 0:
 
-    BASEDIRTORY = '/home/%s/.mybase'%(getpass.getuser())
+    BASEDIRTORY = '/home/%s/Dropbox/mybase'%(getpass.getuser())
 
     if not os.path.exists(BASEDIRTORY):
         os.mkdir(BASEDIRTORY)
@@ -79,7 +79,7 @@ class Webkit():
         self.sw.add(self.webview)
         self.sw.hide()
 
-    def view(self, stylescheme, markdown_file):
+    def view(self, markdown_file):
 
         html = """
         <!DOCTYPE html>
@@ -95,7 +95,8 @@ class Webkit():
             %s
         </body>
         </html>
-            """%(stylescheme,markdown.markdown(markdown_file))
+            """%(open(WEBKITTHEME,'r').read(),markdown.markdown(markdown_file))
+
 
         self.webview.load_html_string(html,'')
         self.webview.show_all()
@@ -208,12 +209,13 @@ class Notebook():
         return self.notebook
 
 class TextView():
-    def __init__(self):
+    def __init__(self, webkit):
 
         self.lm = gtksourceview2.LanguageManager()
         self.lm.set_search_path(LANGUAGE_PATH)
         self.Sm = gtksourceview2.StyleSchemeManager()
         self.Sm.set_search_path(TEXTVIEW_PATH)
+        self.webkit = webkit
         self.sourceview = gtksourceview2.View()
         self.sourceview.set_show_right_margin(True)
         self.sourceview.set_show_line_numbers(True)
@@ -221,6 +223,7 @@ class TextView():
         self.sourceview.set_auto_indent(True)
         self.sourceview.set_insert_spaces_instead_of_tabs(True)
         self.sourceview.set_tab_width(4)
+
         self.buff = gtksourceview2.Buffer()
         self.buff.set_max_undo_levels(5)
         self.buff.connect('changed', self.buff_change)
@@ -309,6 +312,8 @@ class TextView():
         fp = open(path,'w')
         fp.write(textbuf)
         fp.close()
+
+        self.webkit.view(open(path,'r').read())
 
         return True
 
@@ -434,6 +439,7 @@ class FileBrowser():
         chooser.destroy()
 
     def msg_dialog(self,title=None, parent=None, flags=0, buttons=None, msg=None):
+
         dialog = gtk.Dialog(title, parent, flags, buttons)
         dialog.vbox.pack_start(gtk.Label(msg))
         dialog.show_all()
@@ -458,15 +464,17 @@ class FileBrowser():
                             (gtk.STOCK_CANCEL,gtk.BUTTONS_CANCEL,
                             gtk.STOCK_OK,gtk.BUTTONS_OK), '名称什么的真的随便啦!')
 
-        entry = gtk.Entry()
 
+        entry = gtk.Entry()
         entry.connect("activate", self.responsetodialog, dialog,gtk.RESPONSE_OK)
 
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(),False, 5,5)
         hbox.pack_end(entry)
         dialog.vbox.pack_end(hbox)
+
         entry.grab_focus()
+
         dialog.show_all()
         r = dialog.run()
 
@@ -492,8 +500,7 @@ class FileBrowser():
 
         os.mknod(os.path.join(filepath,text))
 
-        self.webkit.view(open(WWBKITTHEME,'r').read(),
-                open(os.path.join(filepath,text),'r').read())
+        self.webkit.view(open(os.path.join(filepath,text),'r').read())
 
         self.treestore.append(model.get_iter(path),[text,os.path.join(
                             filepath,text),gtk.STOCK_FILE])
@@ -535,8 +542,7 @@ class FileBrowser():
 
             self.treestore.set(model.get_iter(path),2,gtk.STOCK_FILE)
             self.notebook.update_Page(filepath,newfilepath,'file')
-            self.webkit.view(open(WWBKITTHEME,'r').read(),
-                    open(newfilepath,'r').read())
+            self.webkit.view(open(newfilepath,'r').read())
         else:
             self.notebook.update_Page(filepath,newfilepath,'dir')
             self.treestore.set(model.get_iter(path),2,gtk.STOCK_DIRECTORY)
@@ -615,7 +621,7 @@ class FileBrowser():
 
     def open_node(self, path, model):
 
-        self.txtview = TextView()
+        self.txtview = TextView(self.webkit)
 
         filename = model.get_value(model.get_iter(path),0)
         parent_path = model.get_value(model.iter_parent(model.get_iter(path)),1)
@@ -634,7 +640,7 @@ class FileBrowser():
             self.notebook.add_Page(textview, filepath)
 
             self.notebook.set_current_Page(filepath)
-            self.webkit.view(open(WWBKITTHEME,'r').read(),open(filepath,'r').read())
+            self.webkit.view(open(filepath,'r').read())
 
         else:
             self.txtview.editable(False)
