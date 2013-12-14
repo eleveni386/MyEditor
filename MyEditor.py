@@ -10,6 +10,7 @@ import pygtk
 pygtk.require('2.0')
 import gtk
 import os
+import sys
 import getpass
 import gobject
 import shutil
@@ -30,17 +31,6 @@ LANGUAGE_PATH = ['%s/themes/language-specs'%CURRENTPATH]
 ICON = '%s/icon/M.ico'%CURRENTPATH
 #---------------------------------
 
-if os.getuid() != 0:
-
-    BASEDIRTORY = '/home/%s/Dropbox/mybase'%(getpass.getuser())
-
-    if not os.path.exists(BASEDIRTORY):
-        os.mkdir(BASEDIRTORY)
-
-else:
-
-    print '无法在root下使用'
-    sys.exit(1)
 
 def destory_state():
 
@@ -796,6 +786,18 @@ class MainWindow():
             return False
         else:
             return True
+
+if os.getuid() != 0:
+
+    BASEDIRTORY = '/home/%s/Dropbox/mybase'%(getpass.getuser())
+
+    if not os.path.exists(BASEDIRTORY):
+        os.mkdir(BASEDIRTORY)
+
+else:
+
+    print '无法在root下使用'
+    sys.exit(1)
 
 a = MainWindow()
 a.main()
