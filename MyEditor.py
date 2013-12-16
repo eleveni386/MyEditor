@@ -468,8 +468,8 @@ class FileBrowser():
 
         dialog.show_all()
         r = dialog.run()
-        #if r == gtk.RESPONSE_OK:
-        if r == 1:
+        if r == gtk.BUTTONS_OK:
+        #if r == 1:
             text = entry.get_text()
 
         dialog.destroy()
