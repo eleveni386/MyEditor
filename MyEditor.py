@@ -467,8 +467,8 @@ class FileBrowser():
 
         dialog.show_all()
         r = dialog.run()
-
-        if r == gtk.RESPONSE_OK:
+        #if r == gtk.RESPONSE_OK:
+        if r == 1:
             text = entry.get_text()
 
         dialog.destroy()
@@ -500,11 +500,14 @@ class FileBrowser():
 
         text = self.text_dialog('新建目录')
         if not text : return True
+
         filepath = model.get_value(model.get_iter(path),1)
+
         os.mkdir(os.path.join(filepath,text))
 
         self.treestore.append(model.get_iter(path),[text,os.path.join(
                        filepath,text),gtk.STOCK_DIRECTORY])
+
         return True
 
     def re_name(self,event, path, model):
@@ -790,6 +793,7 @@ class MainWindow():
 if os.getuid() != 0:
 
     BASEDIRTORY = '/home/%s/Dropbox/mybase'%(getpass.getuser())
+    #BASEDIRTORY = '/home/%s/mybase'%(getpass.getuser())
 
     if not os.path.exists(BASEDIRTORY):
         os.mkdir(BASEDIRTORY)
