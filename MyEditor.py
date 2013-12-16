@@ -331,6 +331,7 @@ class FileBrowser():
         self.load_dir(self.default_dir)
 
         self.treeview = gtk.TreeView(self.treestore)
+        self.treeview.expand_all()
         self.model = self.treeview.get_model()
         self.treeview.set_rules_hint(True)
         self.treeview.set_enable_tree_lines(True)
