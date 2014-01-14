@@ -32,9 +32,18 @@ ICON = '%s/icon/M.ico'%CURRENTPATH
 #---------------------------------
 
 
-def destory_state():
+def destory_state(label=None):
 
-    if '未保存' in ''.join(STATE_POOL.values()):
+    if label:
+        if STATE_POOL[label].split()[-1] == '未保存':
+
+            msg = '%s 未保存!\n您确定不保存,而退出?'%(
+                    STATE_POOL[label].split()[0]
+                    )
+        else:
+            return False
+
+    elif '未保存' in ''.join(STATE_POOL.values()):
 
         msg = '您有未保存的文件!\n\n%s\n\n您确定不保存,而退出?'%(
                 ''.join([ i[1].split()[0].split('/')[-1]+'\n'
@@ -42,23 +51,25 @@ def destory_state():
                     if i[1].split()[-1] == '未保存' ])
                 )
 
-        w = gtk.MessageDialog(None,
-                gtk.DIALOG_DESTROY_WITH_PARENT,
-                gtk.MESSAGE_QUESTION,
-                gtk.BUTTONS_YES_NO,
-                msg)
-
-        r = w.run()
-
-        if r == gtk.RESPONSE_YES:
-            w.destroy()
-            return False
-
-        if r == gtk.RESPONSE_NO:
-            w.destroy()
-            return True
     else:
         return False
+
+    w = gtk.MessageDialog(None,
+            gtk.DIALOG_DESTROY_WITH_PARENT,
+            gtk.MESSAGE_QUESTION,
+            gtk.BUTTONS_YES_NO,
+            msg)
+
+    r = w.run()
+
+    if r == gtk.RESPONSE_YES:
+        w.destroy()
+        return False
+
+    if r == gtk.RESPONSE_NO:
+        w.destroy()
+        return True
+
 
 class Webkit():
 
@@ -85,8 +96,8 @@ class Webkit():
             %s
         </body>
         </html>
-            """%(open(WEBKITTHEME,'r').read(),markdown.markdown(markdown_file))
-
+            """% \
+        (open(WEBKITTHEME,'r').read(),markdown.markdown(markdown_file))
 
         self.webview.load_html_string(html,'')
         self.webview.show_all()
@@ -167,7 +178,7 @@ class Notebook():
 
     def destroy_tab(self, widget, data, label_text):
 
-        if destory_state():
+        if destory_state(label_text):
             return False
         else:
 
@@ -576,6 +587,7 @@ class FileBrowser():
         return True
 
     def ALLMenu(self, event, path, model ):
+
         menu = gtk.Menu()
         new_file = gtk.MenuItem("新建笔记")
         menu.append(new_file)
